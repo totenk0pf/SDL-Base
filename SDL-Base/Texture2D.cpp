@@ -2,21 +2,19 @@
 #include <SDL_image.h>
 #include <iostream>
 
-using namespace std;
-
 Texture2D::Texture2D(SDL_Renderer* renderer) {
 	mRenderer = renderer;
-	mTexture = NULL;
+	mTexture = nullptr;
 	int mWidth = 0;
 	int mHeight = 0;
 };
 
 Texture2D::~Texture2D() {
 	Free();
-	mRenderer = NULL;
+	mRenderer = nullptr;
 }
 
-bool Texture2D::LoadFromFile(string path) {
+bool Texture2D::LoadFromFile(std::string path) {
 	Free();
 	SDL_Surface* pSurface = IMG_Load(path.c_str());
 	if (pSurface != nullptr) {
@@ -25,19 +23,19 @@ bool Texture2D::LoadFromFile(string path) {
 		mHeight = pSurface->h;	
 		mTexture = SDL_CreateTextureFromSurface(mRenderer, pSurface);
 		if (mTexture == nullptr) {
-			cout << "Unable to create texture from surface. Error: " << SDL_GetError() << endl;
+			std::cout << "Unable to create texture from surface. Error: " << SDL_GetError() << std::endl;
 		}
 		SDL_FreeSurface(pSurface);	
 		return mTexture != nullptr;
 	} else {
-		cout << "Unable to create texture from surface. Error: " << IMG_GetError() << endl;
+		std::cout << "Unable to create texture from surface. Error: " << IMG_GetError() << std::endl;
 	}
 };
 
 void Texture2D::Free() {
 	if (mTexture != nullptr) {
 		SDL_DestroyTexture(mTexture);
-		SDL_Texture* mTexture = nullptr;
+		mTexture = nullptr;
 		mWidth = 0;
 		mHeight = 0;
 	}

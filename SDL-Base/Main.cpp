@@ -20,7 +20,7 @@ bool Update();
 
 bool InitSDL() {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-		cout << "SDL did not initialize. Error: " << SDL_GetError();
+		std::cout << "SDL did not initialize. Error: " << SDL_GetError();
 		return false;
 	} else {
 		gWindow = SDL_CreateWindow(
@@ -32,18 +32,18 @@ bool InitSDL() {
 			SDL_WINDOW_SHOWN
 		);
 		if (gWindow == nullptr) {
-			cout << "Window was not created. Error: " << SDL_GetError();
+			std::cout << "Window was not created. Error: " << SDL_GetError();
 			return false;
 		}
 		gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED);
 		if (gRenderer != nullptr) {
 			int imgFlags = IMG_INIT_PNG;
 			if (!(IMG_Init(imgFlags) & imgFlags)) {
-				cout << "SDL_Image could not initialize. Error: " << IMG_GetError();
+				std::cout << "SDL_Image could not initialize. Error: " << IMG_GetError();
 				return false;
 			}
 		} else {
-			cout << "Renderer could not initialize. Error: " << SDL_GetError();
+			std::cout << "Renderer could not initialize. Error: " << SDL_GetError();
 			return false;
 		}
 		return true;
