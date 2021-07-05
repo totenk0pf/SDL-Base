@@ -6,23 +6,80 @@
 #include <SDL.h>
 #include <iostream>
 #include "Commons.h"
+#include <vector>
 
+class LevelMap;
 class Texture2D;
 class Character {
 public:
-	Character(SDL_Renderer* renderer, std::string imagePath, Vector2D startPosition);
+	Character(SDL_Renderer* renderer, std::string imagePath, Vector2D startPosition, LevelMap* map);
 	~Character();
 
 	virtual void Render();
-	virtual void Update(float deltaTime, SDL_Event e);
+	virtual void Update(float deltaTime, const Uint8* keyState);
 
-	void SetPosition(Vector2D newPosition);
-	Vector2D GetPosition();
+	void SetPosition(Vector2D newPosition) { mPosition = newPosition; };
+	float GetCollisionRadius() { return mCollisionRadius; };
+	Vector2D GetPosition() { return mPosition; };
+	Rect2D GetCollisionBox();
+	FACING GetDirection() { return mFacingDirection; };
+	bool GetAlive() { return mAlive; };
+	bool IsJumping() { return mJumping; };
+	bool IsFalling() { return mFalling; };
+	bool IsGrounded() { return mGrounded; };
+	void CancelJump() { mJumpForce = 0; };
+	int GetScore() { return mScore; };
+
+	void SetCanMoveLeft(bool state) { mCanMoveLeft = state; };
+	void SetCanMoveRight(bool state) { mCanMoveRight = state; };
+	void SetFalling(bool state) { mFalling = state; };
+	void SetCanJump(bool state) { mCanJump = state; };
+	void SetJumping(bool state) { mJumping = state; };
+	void SetAlive(bool state) { mAlive = state; };
+	void SetGrounded(bool state) { mGrounded = state; };
+	void SetScore(int newScore) { mScore = newScore; };
+	void Die();
+
+	bool canMoveLeft() { return mCanMoveLeft; };
+	bool canMoveRight() { return mCanMoveRight; };
+	bool canJump() { return mCanJump; };
+
+	int tileL;
+	int tileM;
+	int tileR;
+
+	std::vector<int> GetCollisionMatrix(int wCount=1, int hCount=1);
+	std::string mName;
+
 private:
+	FACING mFacingDirection;
+	bool mMovingLeft;
+	bool mMovingRight;
+	LevelMap* mLevelMap;
+
 protected:
 	SDL_Renderer* mRenderer;
 	Vector2D mPosition;
 	Texture2D* mTexture;
+
+	int mScore;
+	bool mAlive;
+	bool mJumping;
+	bool mCanJump;
+	bool mCanMoveLeft;
+	bool mCanMoveRight;
+	bool mFalling;
+	bool mGrounded;
+	float mJumpForce;
+	float mCollisionRadius;
+
+	float mFrameW;
+	float mFrameH;
+
+	void AddGravity(float deltaTime);
+	virtual void MoveLeft(float deltaTime);
+	virtual void MoveRight(float deltaTime);
+	virtual void Jump(float deltaTime);
 };
 
 

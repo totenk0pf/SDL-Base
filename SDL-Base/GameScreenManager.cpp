@@ -18,8 +18,8 @@ void GameScreenManager::Render() {
 	mCurrentScreen->Render();
 }
 
-void GameScreenManager::Update(float deltaTime, SDL_Event e) {
-	mCurrentScreen->Update(deltaTime, e);
+void GameScreenManager::Update(float deltaTime, const Uint8* keyState) {
+	mCurrentScreen->Update(deltaTime, keyState);
 }
 
 void GameScreenManager::ChangeScreen(SCREENS newScreen) {
@@ -35,3 +35,11 @@ void GameScreenManager::ChangeScreen(SCREENS newScreen) {
 			break;
 	}
 }
+
+GAMESTATE GameScreenManager::GetCurrentGameState() {
+	return mCurrentScreen->GetGameState();
+};
+
+GAMESTATE GameScreenManager::GetNextGameState() {
+	return mCurrentScreen->GetNextGameState();
+};

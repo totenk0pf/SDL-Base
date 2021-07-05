@@ -5,8 +5,8 @@
 Texture2D::Texture2D(SDL_Renderer* renderer) {
 	mRenderer = renderer;
 	mTexture = nullptr;
-	int mWidth = 0;
-	int mHeight = 0;
+	mWidth = 0;
+	mHeight = 0;
 };
 
 Texture2D::~Texture2D() {
@@ -27,7 +27,7 @@ bool Texture2D::LoadFromFile(std::string path) {
 		}
 		SDL_FreeSurface(pSurface);	
 		return mTexture != nullptr;
-	} else {
+	} else { 
 		std::cout << "Unable to create texture from surface. Error: " << IMG_GetError() << std::endl;
 	}
 };
@@ -42,9 +42,11 @@ void Texture2D::Free() {
 }
 
 void Texture2D::Render(Vector2D newPosition, SDL_RendererFlip flip, double angle) {
-	SDL_SetRenderDrawColor(mRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
-	SDL_RenderClear(mRenderer);
-	SDL_Rect renderLocation = { 0, 0, mWidth, mHeight };
+	SDL_SetRenderDrawColor(mRenderer, 0x00, 0x00, 0x00, 0x00);
+	SDL_Rect renderLocation = { newPosition.x, newPosition.y, mWidth, mHeight };
 	SDL_RenderCopyEx(mRenderer, mTexture, nullptr, &renderLocation, angle, nullptr, flip);
-	SDL_RenderPresent(mRenderer);
+}
+
+void Texture2D::Render(SDL_Rect srcRect, SDL_Rect destRect, SDL_RendererFlip flip, double angle) {
+	SDL_RenderCopyEx(mRenderer, mTexture, &srcRect, &destRect, angle, nullptr, flip); 
 }

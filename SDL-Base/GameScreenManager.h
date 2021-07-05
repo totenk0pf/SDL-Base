@@ -13,8 +13,11 @@ public:
 	~GameScreenManager();
 
 	void Render();
-	void Update(float deltaTime, SDL_Event e);
+	void Update(float deltaTime, const Uint8* keyState);
 	void ChangeScreen(SCREENS newScreen);
+
+	GAMESTATE GetCurrentGameState();
+	GAMESTATE GetNextGameState();
 
 private:
 	SDL_Renderer* mRenderer;
