@@ -17,6 +17,8 @@ Character::Character(SDL_Renderer* renderer, std::string imagePath, Vector2D sta
 	mGrounded = true;
 	mCollisionRadius = 15.0f;
 	mLevelMap = map;
+	int mScore = 0;
+	int mCoins = 0;
 }
 
 Character::~Character() {
@@ -97,5 +99,16 @@ std::vector<int> Character::GetCollisionMatrix(int wCount, int hCount) {
 }
 
 Rect2D Character::GetCollisionBox() {
-	return Rect2D(mPosition.x, mPosition.y, mTexture->GetWidth(), mTexture->GetHeight());
+	return Rect2D(mPosition.x, mPosition.y, mFrameW, mFrameH);
+}
+
+void Character::PlayAnim(float deltaTime, int frameCount, float animDelay) {
+	mFrameDelay -= deltaTime;
+	if (mFrameDelay <= 0.0f) {
+		mFrameDelay = animDelay;
+		mCurrentFrame++;
+		if (mCurrentFrame > mInitFrame + frameCount) {
+			mCurrentFrame = mInitFrame;
+		}
+	}
 }

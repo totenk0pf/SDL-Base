@@ -13,6 +13,7 @@ public:
 	TextRenderer(int fontSize);
 	~TextRenderer();
 	void Render(SDL_Renderer* renderer, const char* message, int x, int y);
+	void Render(SDL_Renderer* renderer, const int score, int padding, int x, int y);
 
 private:
 	TTF_Font* font;

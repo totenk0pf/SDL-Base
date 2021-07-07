@@ -90,6 +90,9 @@
     <ClCompile Include="GameManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="DataParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Texture2D.h">
@@ -158,12 +161,15 @@
     <ClInclude Include="GameManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DataParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="SDL\lib\x86\SDL2_image.lib" />
-    <Library Include="SDL\lib\x86\SDL2_mixer.lib" />
     <Library Include="SDL\lib\x86\SDL2_ttf.lib" />
     <Library Include="SDL\lib\x86\SDL2main.lib" />
     <Library Include="SDL\lib\x86\SDL2.lib" />
+    <Library Include="SDL\lib\x86\SDL2_mixer.lib" />
   </ItemGroup>
 </Project>

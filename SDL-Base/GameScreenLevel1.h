@@ -39,8 +39,6 @@ private:
 	float mBackgroundYPos;
 
 	Texture2D* mBackgroundTexture;
-	CharacterMario* charMario;
-	CharacterLuigi* charLuigi;
 	LevelMap* mLevelMap;
 	SoundEffect* mBgMusic;
 	PowBlock* mPowBlock;

@@ -16,9 +16,6 @@ public:
 	Rect2D GetCollisionBox();
 
 private:
-	float mFrameDelay;
-	float mCurrentFrame;
-
 
 protected:
 };

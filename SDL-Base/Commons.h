@@ -66,11 +66,6 @@ enum FACING {
 	FACING_RIGHT
 };
 
-enum CHARACTERSTATE {
-	DEAD = 0,
-	ALIVE
-};
-
 enum GAMESTATE {
 	EXIT_STATE = 0,
 	INTRO_STATE,

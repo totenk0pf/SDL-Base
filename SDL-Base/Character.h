@@ -29,6 +29,8 @@ public:
 	bool IsGrounded() { return mGrounded; };
 	void CancelJump() { mJumpForce = 0; };
 	int GetScore() { return mScore; };
+	int GetCoins() { return mCoins; };
+	int GetCurrentFrame() { return mCurrentFrame; };
 
 	void SetCanMoveLeft(bool state) { mCanMoveLeft = state; };
 	void SetCanMoveRight(bool state) { mCanMoveRight = state; };
@@ -38,6 +40,7 @@ public:
 	void SetAlive(bool state) { mAlive = state; };
 	void SetGrounded(bool state) { mGrounded = state; };
 	void SetScore(int newScore) { mScore = newScore; };
+	void SetCoins(int newCoins) { mCoins = newCoins; };
 	void Die();
 
 	bool canMoveLeft() { return mCanMoveLeft; };
@@ -61,8 +64,10 @@ protected:
 	SDL_Renderer* mRenderer;
 	Vector2D mPosition;
 	Texture2D* mTexture;
-
 	int mScore;
+	int mCoins;
+	int mInitFrame;
+	int mCurrentFrame;
 	bool mAlive;
 	bool mJumping;
 	bool mCanJump;
@@ -72,14 +77,17 @@ protected:
 	bool mGrounded;
 	float mJumpForce;
 	float mCollisionRadius;
+	float mAcceleration;
 
 	float mFrameW;
 	float mFrameH;
+	float mFrameDelay;
 
 	void AddGravity(float deltaTime);
 	virtual void MoveLeft(float deltaTime);
 	virtual void MoveRight(float deltaTime);
 	virtual void Jump(float deltaTime);
+	virtual void PlayAnim(float deltaTime, int frameCount, float animDelay);
 };
 
 

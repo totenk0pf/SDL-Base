@@ -88,7 +88,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)SDL\include;$(ProjectDir)Imgui;$(ProjectDir)Imgui\backends;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)SDL\include;$(ProjectDir)Imgui;$(ProjectDir)Imgui\backends;$(ProjectDir)JSON\single_include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -148,6 +148,7 @@
     <ClCompile Include="CharacterMario.cpp" />
     <ClCompile Include="Coin.cpp" />
     <ClCompile Include="Collisions.cpp" />
+    <ClCompile Include="DataParser.cpp" />
     <ClCompile Include="Debug.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="GameScreen.cpp" />
@@ -177,6 +178,7 @@
     <ClInclude Include="Collisions.h" />
     <ClInclude Include="Commons.h" />
     <ClInclude Include="Constants.h" />
+    <ClInclude Include="DataParser.h" />
     <ClInclude Include="Debug.h" />
     <ClInclude Include="GameManager.h" />
     <ClInclude Include="GameScreen.h" />
