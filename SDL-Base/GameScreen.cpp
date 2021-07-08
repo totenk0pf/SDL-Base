@@ -11,4 +11,5 @@ GameScreen::~GameScreen() {
 }
 
 void GameScreen::Update(float deltaTime, const Uint8* keyState) {}
+
 void GameScreen::Render() {};

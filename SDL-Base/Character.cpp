@@ -27,25 +27,49 @@ Character::~Character() {
 
 void Character::Update(float deltaTime, const Uint8* keyState) {
 	std::vector<int> colMatrix = GetCollisionMatrix();
-	if (colMatrix[6] || colMatrix[7] || colMatrix[8]) {
+	if (colMatrix[6] || colMatrix[7] || colMatrix[8] && !IsJumping()) {
 		SetFalling(false);
 		SetCanJump(true);
 	} else {
 		SetFalling(true);
 	}
 	if (IsJumping()) {
-		if (colMatrix[2] || colMatrix[5] || colMatrix[8]) {
-			SetCanMoveRight(false);
+		if (!colMatrix[1] && (!colMatrix[0] && !colMatrix[2])) {
+			mPosition.y -= mJumpForce * deltaTime;
+			mJumpForce -= JUMP_FORCE_DECREMENT * deltaTime;
+			if (mAlive) {
+				if (colMatrix[6] || colMatrix[7] || colMatrix[8]) {
+					CancelJump();
+					mFalling = false;
+					mJumping = false;
+					mCanJump = true;
+				}
+			}
 		} else {
-			SetCanMoveRight(true);
-		}
+			if (!colMatrix[1] && (!colMatrix[0] || !colMatrix[2])) {
+				mPosition.y -= mJumpForce * deltaTime;
+				mJumpForce -= JUMP_FORCE_DECREMENT * deltaTime;
+			}
+			if (colMatrix[6] || colMatrix[7] || colMatrix[8]) {
+				if (colMatrix[2] || colMatrix[5]) {
+					SetCanMoveRight(false);
+				} else {
+					SetCanMoveRight(true);
+				}
+				if (colMatrix[0] || colMatrix[3]) {
+					SetCanMoveLeft(false);
+				} else {
+					SetCanMoveLeft(true);
+				}
 
-		if (colMatrix[0] || colMatrix[3] || colMatrix[6]) {
-			SetCanMoveLeft(false);
-		} else {
-			SetCanMoveLeft(true);
+				SetFalling(true);
+			} else if (!colMatrix[6] && !colMatrix[7] && !colMatrix[8]) {
+				CancelJump();
+				SetFalling(true);
+			}
 		}
-	} else {
+	}
+	if (!IsJumping() || !IsFalling()) {
 		if (colMatrix[2] || colMatrix[5]) {
 			SetCanMoveRight(false);
 		} else {
@@ -57,25 +81,21 @@ void Character::Update(float deltaTime, const Uint8* keyState) {
 			SetCanMoveLeft(true);
 		}
 	}
-	if (mJumping) {
-		if (!colMatrix[0] && !colMatrix[1] && !colMatrix[2]) {
-			mPosition.y -= mJumpForce * deltaTime;
-			mJumpForce -= JUMP_FORCE_DECREMENT * deltaTime;
-			if (mAlive) {
-				if (mJumpForce <= 0.0f && (colMatrix[6] && colMatrix[7] && colMatrix[8])) {
-					CancelJump();
-					mFalling = false;
-					mJumping = false;
-				}
-			}
-		} else {
-			CancelJump();
-			mFalling = true;
-		}
+	Rect2D _tmpCol = GetCollisionBox();
+	if (_tmpCol.x <= 0) {
+		SetCanMoveLeft(false);
 	}
-	if (mFalling) {
-		mCanJump = false;
-		AddGravity(deltaTime);
+	if (_tmpCol.x + _tmpCol.w > SCREEN_WIDTH) {
+		SetCanMoveRight(false);
+	}
+	if (IsFalling()) {
+		if (colMatrix[6] || colMatrix[7] || colMatrix[8]) {
+			SetCanJump(true);
+			SetFalling(false);
+		} else {
+			SetCanJump(false);
+			AddGravity(deltaTime);
+		}
 	}
 }
 
@@ -125,9 +145,9 @@ void Character::AddGravity(float deltaTime) {
 
 std::vector<int> Character::GetCollisionMatrix(int wCount, int hCount) {
 	std::vector<std::pair<float, float>> matrixPos{
-		{0,0},{0.5f,0},{1,0},
-		{0,0.5f},{0.5f,0.5f},{1,0.5f},
-		{0,1.02f},{0.5f,1.02f},{1,1.02f}
+		{-0.1f,0},{0.5f,0},{1.1f,0},
+		{-0.1f,0.5f},{0.5f,0.5f},{1.1f,0.5f},
+		{-0.1f,1.02f},{0.5f,1.02f},{1.1f,1.02f}
 	};
 	Rect2D col = GetCollisionBox();
 	std::vector<int> collisionMatrix;

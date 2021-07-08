@@ -53,6 +53,9 @@ void GameScreenLevel2::Update(float deltaTime, const Uint8* keyState) {
 			case SDLK_h:
 				gameManager->SetDebug(!gameManager->GetDebug());
 				break;
+			case SDLK_ESCAPE:
+				SetNextGameState(INTRO_STATE);
+				break;
 			}
 			break;
 		}
@@ -60,7 +63,7 @@ void GameScreenLevel2::Update(float deltaTime, const Uint8* keyState) {
 	for (Uint8 i = 0; i < mCharacters.size(); i++) {
 		mCharacters[i]->Update(deltaTime, keyState);
 	}
-	//PlayerCollision();
+	PlayerCollision();
 	UpdatePOWBlock();
 	UpdateEnemies(deltaTime, keyState);
 	UpdateCoins(deltaTime);
@@ -190,8 +193,8 @@ bool GameScreenLevel2::SetUpLevel() {
 	SetNextGameState(LVL2_STATE);
 	mBackgroundTexture = new Texture2D(mRenderer);
 	SetLevelMap();
-	CharacterMario* charMario = new CharacterMario(mRenderer, Vector2D(64, 330), mLevelMap);
-	CharacterLuigi* charLuigi = new CharacterLuigi(mRenderer, Vector2D(320, 330), mLevelMap);
+	CharacterMario* charMario = new CharacterMario(mRenderer, Vector2D(72, 330), mLevelMap);
+	CharacterLuigi* charLuigi = new CharacterLuigi(mRenderer, Vector2D(400, 330), mLevelMap);
 	nlohmann::json data = DataParser::Instance()->DataFromFile("GameData/Level2/lvldata.json");
 	mCharacters.push_back(charMario);
 	mCharacters.push_back(charLuigi);
@@ -223,7 +226,7 @@ void GameScreenLevel2::SetLevelMap() {
 	int map[MAP_HEIGHT][MAP_WIDTH] = {
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-		{1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1},
+		{1,1,1,1,1,0,0,0,0,0,0,1,1,1,1,1},
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 		{0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0},
 		{0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0},
@@ -283,15 +286,13 @@ void GameScreenLevel2::PlayerCollision() {
 							mCharacters[c2]->SetCanMoveLeft(true);
 							mCharacters[c2]->SetCanMoveRight(true);
 						}
-						if (c1Col.y + c1Col.h >= c2Col.y) {
+						if (c1Col.y + c1Col.h <= c2Col.y) {
 							mCharacters[c1]->SetCanJump(true);
-							mCharacters[c1]->SetGrounded(true);
 							mCharacters[c1]->SetFalling(false);
 							mCharacters[c1]->SetJumping(false);
 						}
-						if (c2Col.y + c2Col.h >= c1Col.y) {
+						if (c2Col.y + c2Col.h <= c1Col.y) {
 							mCharacters[c2]->SetCanJump(true);
-							mCharacters[c2]->SetGrounded(true);
 							mCharacters[c2]->SetFalling(false);
 							mCharacters[c2]->SetJumping(false);
 						}
@@ -315,14 +316,15 @@ void GameScreenLevel2::UpdateEnemies(float deltaTime, const Uint8* keyState) {
 	if (!mEnemies.empty()) {
 		int enemyIdx = -1;
 		for (unsigned int i = 0; i < mEnemies.size(); i++) {
+			mEnemies[i]->Update(deltaTime, keyState);
 			if (mEnemies[i]->GetPosition().y > 300.0f) {
 				if (mEnemies[i]->GetPosition().x < (float)(-mEnemies[i]->GetCollisionBox().w * 0.5f) ||
 					mEnemies[i]->GetPosition().x > SCREEN_WIDTH - (float)(mEnemies[i]->GetCollisionBox().w * 0.55f)) {
 					mEnemies[i]->SetAlive(false);
 				}
 			}
-			if ((mEnemies[i]->GetPosition().y > 300.0f || mEnemies[i]->GetPosition().y <= 64.0f) &&
-				(mEnemies[i]->GetPosition().x < 64.0f || mEnemies[i]->GetPosition().x > SCREEN_WIDTH - 96.0f)) {
+			if ((mEnemies[i]->GetPosition().x < 0.0f || mEnemies[i]->GetPosition().x > SCREEN_WIDTH - mEnemies[i]->GetCollisionBox().w)) {
+				mEnemies[i]->Flip();
 			} else {
 				for (unsigned int c = 0; c < mCharacters.size(); c++) {
 					if (Collisions::Instance()->Box(mEnemies[i]->GetCollisionBox(), mCharacters[c]->GetCollisionBox())) {
@@ -333,25 +335,7 @@ void GameScreenLevel2::UpdateEnemies(float deltaTime, const Uint8* keyState) {
 						}
 					}
 				}
-				std::vector<int> colMatrix = mEnemies[i]->GetCollisionMatrix(3, 1);
-				switch (mEnemies[i]->GetDirection()) {
-				case FACING_LEFT:
-					if (!colMatrix[7]) {
-						mEnemies[i]->SetFalling(true);
-					} else {
-						mEnemies[i]->SetFalling(false);
-					}
-					break;
-				case FACING_RIGHT:
-					if (!colMatrix[7]) {
-						mEnemies[i]->SetFalling(true);
-					} else {
-						mEnemies[i]->SetFalling(false);
-					}
-					break;
-				}
 			}
-			mEnemies[i]->Update(deltaTime, keyState);
 			if (!mEnemies[i]->GetAlive()) {
 				enemyIdx = i;
 			}

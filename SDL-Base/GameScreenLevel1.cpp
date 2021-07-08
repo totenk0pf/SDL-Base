@@ -53,6 +53,9 @@ void GameScreenLevel1::Update(float deltaTime, const Uint8* keyState) {
 			case SDLK_h:
 				gameManager->SetDebug(!gameManager->GetDebug());
 				break;
+			case SDLK_ESCAPE:
+				SetNextGameState(INTRO_STATE);
+				break;
 			}
 			break;
 		}
@@ -184,11 +187,9 @@ bool GameScreenLevel1::SetUpLevel() {
 	SetNextGameState(LVL1_STATE);
 	mBackgroundTexture = new Texture2D(mRenderer);
 	SetLevelMap();
-	CharacterMario* charMario = new CharacterMario(mRenderer, Vector2D(64, 330), mLevelMap);
-	CharacterLuigi* charLuigi = new CharacterLuigi(mRenderer, Vector2D(320, 330), mLevelMap);
+	CharacterMario* charMario = new CharacterMario(mRenderer, Vector2D(72, 330), mLevelMap);
 	nlohmann::json data = DataParser::Instance()->DataFromFile("GameData/Level1/lvldata.json");
 	mCharacters.push_back(charMario);
-	mCharacters.push_back(charLuigi);
 	for (Uint8 i = 0; i < data["enemies"].size(); i++) {
 		Vector2D pos = Vector2D(data["enemies"][i]["pos"][0], data["enemies"][i]["pos"][1]);
 		FACING dir;
@@ -309,14 +310,15 @@ void GameScreenLevel1::UpdateEnemies(float deltaTime, const Uint8* keyState) {
 	if (!mEnemies.empty()) {
 		int enemyIdx = -1;
 		for (unsigned int i = 0; i < mEnemies.size(); i++) {
+			mEnemies[i]->Update(deltaTime, keyState);
 			if (mEnemies[i]->GetPosition().y > 300.0f) {
 				if (mEnemies[i]->GetPosition().x < (float)(-mEnemies[i]->GetCollisionBox().w * 0.5f) ||
 					mEnemies[i]->GetPosition().x > SCREEN_WIDTH - (float)(mEnemies[i]->GetCollisionBox().w * 0.55f)) {
 					mEnemies[i]->SetAlive(false);
 				}
 			}
-			if ((mEnemies[i]->GetPosition().y > 300.0f || mEnemies[i]->GetPosition().y <= 64.0f) &&
-				(mEnemies[i]->GetPosition().x < 64.0f || mEnemies[i]->GetPosition().x > SCREEN_WIDTH - 96.0f)) {
+			if ((mEnemies[i]->GetPosition().x < 0.0f || mEnemies[i]->GetPosition().x > SCREEN_WIDTH - mEnemies[i]->GetCollisionBox().w)) {
+				mEnemies[i]->Flip();
 			} else {
 				for (unsigned int c = 0; c < mCharacters.size(); c++) {
 					if (Collisions::Instance()->Box(mEnemies[i]->GetCollisionBox(), mCharacters[c]->GetCollisionBox())) {
@@ -327,25 +329,7 @@ void GameScreenLevel1::UpdateEnemies(float deltaTime, const Uint8* keyState) {
 						}
 					}
 				}
-				std::vector<int> colMatrix = mEnemies[i]->GetCollisionMatrix(3, 1);
-				switch (mEnemies[i]->GetDirection()) {
-					case FACING_LEFT:
-						if (!colMatrix[8]) {
-							mEnemies[i]->SetFalling(true);
-						} else {
-							mEnemies[i]->SetFalling(false);
-						}
-						break;
-					case FACING_RIGHT:
-						if (!colMatrix[6]) {
-							mEnemies[i]->SetFalling(true);
-						} else {
-							mEnemies[i]->SetFalling(false);
-						}
-						break;
-				}
 			}
-			mEnemies[i]->Update(deltaTime, keyState);
 			if (!mEnemies[i]->GetAlive()) {
 				enemyIdx = i;
 			}

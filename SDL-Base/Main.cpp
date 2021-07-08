@@ -92,9 +92,8 @@ bool Update() {
 			case SDL_RENDER_DEVICE_RESET:
 				gameScreenManager->Render();
 				break;
-			case SDL_KEYUP:
+			case SDL_KEYDOWN:
 				switch (e.key.keysym.sym) {
-					
 				}
 				break;
 		}

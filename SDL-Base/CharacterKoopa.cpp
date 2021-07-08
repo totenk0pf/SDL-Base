@@ -9,7 +9,7 @@ CharacterKoopa::CharacterKoopa(SDL_Renderer* renderer, LevelMap* map, Vector2D s
 
 	mAlive = true;
 	mInjured = false;
-	mJumping = true;
+	mJumping = false;
 
 	mFrameW = mTexture->GetWidth() / 2;
 	mFrameH = mTexture->GetHeight();
@@ -21,33 +21,31 @@ CharacterKoopa::~CharacterKoopa() {
 }
 
 void CharacterKoopa::Update(float deltaTime, const Uint8* keyState) {
+	Character::Update(deltaTime, keyState);
 	if (mAlive) {
-		Character::Update(deltaTime, keyState);
 		std::vector<int> colMatrix = GetCollisionMatrix();
 		if (!mInjured) {
 			switch (mFacingDirection) {
-			case FACING_LEFT:
-				mMovingLeft = true;
-				mMovingRight = false;
-				break;
-			case FACING_RIGHT:
-				mMovingLeft = false;
-				mMovingRight = true;
-				break;
-			}
-			if (!colMatrix[3] || !colMatrix[5]) {
-				switch (mFacingDirection) {
-					case FACING_LEFT:
-						MoveLeft(deltaTime);
-						break;
-					case FACING_RIGHT:
-						MoveRight(deltaTime);
-						break;
+				case FACING_LEFT:
+					mMovingLeft = true;
+					mMovingRight = false;
+					MoveLeft(deltaTime);
+					break;
+				case FACING_RIGHT:
+					mMovingLeft = false;
+					mMovingRight = true;
+					MoveRight(deltaTime);
+					break;
 				}
-			} else {
-				if (colMatrix[3] && mFacingDirection == FACING_LEFT) {
+			if ((colMatrix[0] || colMatrix[3]) && mFacingDirection == FACING_LEFT) {
+				Flip();
+			} else if ((colMatrix[2] || colMatrix[5]) && mFacingDirection == FACING_RIGHT) {
+				Flip();
+			}
+			if (IsJumping() || IsFalling()) {
+				if ((colMatrix[0] || colMatrix[3]) && mFacingDirection == FACING_LEFT) {
 					Flip();
-				} else if (colMatrix[5] && mFacingDirection == FACING_RIGHT) {
+				} else if ((colMatrix[2] || colMatrix[5]) && mFacingDirection == FACING_RIGHT) {
 					Flip();
 				}
 			}
@@ -59,6 +57,7 @@ void CharacterKoopa::Update(float deltaTime, const Uint8* keyState) {
 				Flip();
 			}
 		}
+	} else {
 	}
 }
 
@@ -76,7 +75,7 @@ void CharacterKoopa::Render() {
 	}
 }
 
-void CharacterKoopa::Flip() {
+void CharacterKoopa::Flip(bool jump) {
 	switch (mFacingDirection) {
 	case FACING_LEFT:
 		mFacingDirection = FACING_RIGHT;
@@ -86,7 +85,9 @@ void CharacterKoopa::Flip() {
 		break;
 	}
 	mInjured = false;
-	Jump();
+	if (jump) {
+		Jump();
+	}
 }
 
 void CharacterKoopa::TakeDamage() {

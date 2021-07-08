@@ -15,7 +15,6 @@ DataParser::~DataParser() {
 
 nlohmann::json DataParser::DataFromFile(std::string pathToFile) {
 	std::ifstream i(pathToFile);
-	std::cout << pathToFile << std::endl;
 	nlohmann::json data;
 	try {
 		data = nlohmann::json::parse(i);

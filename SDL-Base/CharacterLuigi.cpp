@@ -65,10 +65,12 @@ void CharacterLuigi::Update(float deltaTime, const Uint8* keyState) {
 			mMovingRight = false;
 		}
 		if (keyState[SDL_SCANCODE_UP]) {
-			mCurrentFrame = 5;
-			mInitFrame = 5;
-			Character::PlayAnim(deltaTime, 0, 0.1f);
-			Jump(deltaTime);
+			if (mCanJump) {
+				mCurrentFrame = 5;
+				mInitFrame = 5;
+				Character::PlayAnim(deltaTime, 0, 0.1f);
+				Jump(deltaTime);
+			}
 		}
 		if (!mMovingLeft && !mMovingRight && !mJumping) {
 			if (mAcceleration > 0) {

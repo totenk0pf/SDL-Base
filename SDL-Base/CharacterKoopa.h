@@ -21,6 +21,7 @@ public:
 
 	Rect2D GetCollisionBox();
 	bool GetInjured() { return mInjured; };
+	void Flip(bool jump = false);
 
 private:
 	float mMovementSpeed;
@@ -28,7 +29,6 @@ private:
 	bool mInjured;
 	float mInjuredTime;
 
-	void Flip();
 
 	FACING mFacingDirection;
 	bool mMovingLeft;
