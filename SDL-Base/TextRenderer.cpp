@@ -41,3 +41,11 @@ void TextRenderer::Render(SDL_Renderer* renderer, const int score, int padding, 
 	SDL_QueryTexture(text, nullptr, nullptr, &textRect.w, &textRect.h);
 	SDL_RenderCopy(renderer, text, nullptr, &textRect);
 }
+
+std::pair<int, int> TextRenderer::GetSize(const char* message) {
+	int w, h;
+	TTF_SizeText(font, message, &w, &h);
+	std::pair<int, int> sz = std::make_pair(w, h);
+	return sz;
+}
+

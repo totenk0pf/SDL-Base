@@ -15,14 +15,12 @@ CharacterMario::~CharacterMario() {
 }
 
 void CharacterMario::Render() {
-	if (mAlive) {
-		SDL_Rect frame = { mFrameW * mCurrentFrame, 0, mFrameW, mFrameH };
-		SDL_Rect destRect = { (int)mPosition.x, (int)mPosition.y, mFrameW, mFrameH };
-		if (mFacingDirection == FACING_RIGHT) {
-			mTexture->Render(frame, destRect, SDL_FLIP_HORIZONTAL);
-		} else {
-			mTexture->Render(frame, destRect);
-		}
+	SDL_Rect frame = { mFrameW * mCurrentFrame, 0, mFrameW, mFrameH };
+	SDL_Rect destRect = { (int)mPosition.x, (int)mPosition.y, mFrameW, mFrameH };
+	if (mFacingDirection == FACING_RIGHT) {
+		mTexture->Render(frame, destRect, SDL_FLIP_HORIZONTAL);
+	} else {
+		mTexture->Render(frame, destRect);
 	}
 }
 
@@ -47,8 +45,8 @@ void CharacterMario::MoveRight(float deltaTime) {
 }
 
 void CharacterMario::Update(float deltaTime, const Uint8* keyState) {
-	Character::Update(deltaTime, keyState);
 	mAlive = Character::GetAlive();
+	Character::Update(deltaTime, keyState);
 	if (mAlive) {
 		if (keyState[SDL_SCANCODE_A] && mCanMoveLeft) {
 			mMovingLeft = true;
@@ -80,6 +78,8 @@ void CharacterMario::Update(float deltaTime, const Uint8* keyState) {
 			}
 			mCurrentFrame = 0;
 		}
+	} else {
+		Character::Die(deltaTime);
 	}
 }
 

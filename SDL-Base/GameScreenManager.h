@@ -7,13 +7,15 @@
 #include "Commons.h"
 
 class GameScreen;
+class TextRenderer;
+
 class GameScreenManager {
 public:
 	GameScreenManager(SDL_Renderer* renderer, SCREENS startScreen);
 	~GameScreenManager();
 
 	void Render();
-	void Update(float deltaTime, const Uint8* keyState);
+	bool Update(float deltaTime, const Uint8* keyState);
 	void ChangeScreen(SCREENS newScreen);
 
 	GAMESTATE GetCurrentGameState();
@@ -22,6 +24,7 @@ public:
 private:
 	SDL_Renderer* mRenderer;
 	GameScreen* mCurrentScreen;
+	TextRenderer* overlayText;
 };
 
 #endif // !_GAME_SCREEN_MANAGER_H

@@ -47,8 +47,8 @@ void CharacterLuigi::MoveRight(float deltaTime) {
 }
 
 void CharacterLuigi::Update(float deltaTime, const Uint8* keyState) {
-	Character::Update(deltaTime, keyState);
 	mAlive = Character::GetAlive();
+	Character::Update(deltaTime, keyState);
 	if (mAlive) {
 		if (keyState[SDL_SCANCODE_LEFT] && mCanMoveLeft) {
 			mMovingLeft = true;
@@ -71,7 +71,7 @@ void CharacterLuigi::Update(float deltaTime, const Uint8* keyState) {
 			mInitFrame = 5;
 			Character::PlayAnim(deltaTime, 0, 0.1f);
 			Jump(deltaTime);
-		} 
+		}
 		if (!mMovingLeft && !mMovingRight && !mJumping) {
 			if (mAcceleration > 0) {
 				mAcceleration -= 0.1f;
@@ -80,6 +80,8 @@ void CharacterLuigi::Update(float deltaTime, const Uint8* keyState) {
 			}
 			mCurrentFrame = 0;
 		}
+	} else {
+		Character::Die(deltaTime);
 	}
 }
 

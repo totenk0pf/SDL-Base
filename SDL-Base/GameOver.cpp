@@ -1,5 +1,5 @@
 #include <iostream>
-#include "TitleScreen.h"
+#include "GameOver.h"
 #include "Texture2D.h"
 #include "Collisions.h"
 #include "Debug.h"
@@ -14,7 +14,7 @@
 
 //GameManager* gameManager = GameManager::Instance();
 
-TitleScreen::TitleScreen(SDL_Renderer* renderer) : GameScreen(renderer) {
+GameOver::GameOver(SDL_Renderer* renderer) : GameScreen(renderer) {
 	mLevelMap = nullptr;
 	titleSpr = new Texture2D(mRenderer);
 	selectSpr = new Texture2D(mRenderer);
@@ -24,21 +24,21 @@ TitleScreen::TitleScreen(SDL_Renderer* renderer) : GameScreen(renderer) {
 		mBgMusic->Play(true);
 	}
 	SetUpLevel();
-	SetGameState(INTRO_STATE);
-	SetNextGameState(INTRO_STATE);
+	SetGameState(LOSE_STATE);
+	SetNextGameState(LOSE_STATE);
 }
 
-TitleScreen::~TitleScreen() {
+GameOver::~GameOver() {
 }
 
-void TitleScreen::Update(float deltaTime, const Uint8* keyState) {
+void GameOver::Update(float deltaTime, const Uint8* keyState) {
 	SDL_Event e;
 	if (SDL_PollEvent(&e)) {
 		switch (e.type) {
 		case SDL_KEYDOWN:
 			switch (e.key.keysym.sym) {
 			case SDLK_DOWN:
-				if (opt < 2) {
+				if (opt < 1) {
 					opt++;
 				} else {
 					opt = 0;
@@ -46,14 +46,14 @@ void TitleScreen::Update(float deltaTime, const Uint8* keyState) {
 				break;
 			case SDLK_UP:
 				if (opt <= 0) {
-					opt = 2;
+					opt = 1;
 				} else {
 					opt--;
 				}
 				break;
 			case SDLK_RETURN:
 				if (!opt) {
-					SetNextGameState(GAME_STATE);
+					SetNextGameState(INTRO_STATE);
 				} else {
 					SetNextGameState(EXIT_STATE);
 				}
@@ -64,19 +64,18 @@ void TitleScreen::Update(float deltaTime, const Uint8* keyState) {
 	}
 }
 
-void TitleScreen::Render() {
+void GameOver::Render() {
 	SDL_RenderClear(mRenderer);
-	titleSpr->Render(Vector2D((SCREEN_WIDTH * 0.5f) - titleSpr->GetWidth() * 0.5f, (SCREEN_HEIGHT * 0.3f)));
+	headerText->Render(mRenderer, "GAME OVER", (SCREEN_WIDTH * 0.5f) - headerText->GetSize("GAME OVER").first * 0.5f, 160);
 	selectSpr->Render(Vector2D((SCREEN_WIDTH * 0.5f) - 80, 240 + (20 * opt + 1)));
-	UIText->Render(mRenderer, "1 PLAYER GAME A", (SCREEN_WIDTH * 0.5f) - UIText->GetSize("1 PLAYER GAME A").first * 0.5f, 240);
-	UIText->Render(mRenderer, "2 PLAYER GAME B", (SCREEN_WIDTH * 0.5f) - UIText->GetSize("2 PLAYER GAME B").first * 0.5f, 260);
-	UIText->Render(mRenderer, "EXIT", (SCREEN_WIDTH * 0.5f) - UIText->GetSize("EXIT").first * 0.5f, 280);
+	UIText->Render(mRenderer, "BACK TO MENU", (SCREEN_WIDTH * 0.5f) - UIText->GetSize("BACK TO MENU").first * 0.5f, 240);
+	UIText->Render(mRenderer, "EXIT", (SCREEN_WIDTH * 0.5f) - UIText->GetSize("EXIT").first * 0.5f, 260);
 	SDL_RenderPresent(mRenderer);
 }
 
-bool TitleScreen::SetUpLevel() {
+bool GameOver::SetUpLevel() {
 	UIText = new TextRenderer(8);
-	titleSpr->LoadFromFile("Images/title.png");
+	headerText = new TextRenderer(24);
 	selectSpr->LoadFromFile("Images/title_select.png");
 	return true;
 }

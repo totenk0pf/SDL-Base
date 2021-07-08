@@ -14,6 +14,7 @@ public:
 	~TextRenderer();
 	void Render(SDL_Renderer* renderer, const char* message, int x, int y);
 	void Render(SDL_Renderer* renderer, const int score, int padding, int x, int y);
+	std::pair<int, int> GetSize(const char* message);
 
 private:
 	TTF_Font* font;

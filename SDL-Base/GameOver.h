@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef _TITLE_SCREEN_H
-#define _TITLE_SCREEN_H
+#ifndef _GAME_OVER_H
+#define _GAME_OVER_H
 
 #include <SDL.h>
 #include "Commons.h"
@@ -12,10 +12,10 @@ class Texture2D;
 class GameManager;
 class TextRenderer;
 
-class TitleScreen : GameScreen {
+class GameOver : GameScreen {
 public:
-	TitleScreen(SDL_Renderer* renderer);
-	~TitleScreen();
+	GameOver(SDL_Renderer* renderer);
+	~GameOver();
 	void Render();
 	void Update(float deltaTime, const Uint8* keyState);
 
@@ -23,6 +23,7 @@ private:
 	LevelMap* mLevelMap;
 	SoundEffect* mBgMusic;
 	TextRenderer* UIText;
+	TextRenderer* headerText;
 	Texture2D* titleSpr;
 	Texture2D* selectSpr;
 
@@ -30,5 +31,4 @@ private:
 	int opt;
 };
 
-#endif // !_TITLE_SCREEN_H
-
+#endif // !_GAME_OVER_H

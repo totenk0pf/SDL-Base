@@ -28,9 +28,14 @@ GameScreenLevel1::~GameScreenLevel1() {
 	delete mPowBlock;
 	mPowBlock = nullptr;
 	mEnemies.clear();
+	mCoins.clear();
+	mCharacters.clear();
 }
 
 void GameScreenLevel1::Update(float deltaTime, const Uint8* keyState) {
+	if (mCharacters.size() <= 0) {
+		SetNextGameState(LOSE_STATE);
+	}
 	if (mScreenshake) {
 		mScreenshakeTime -= deltaTime;
 		mWobble++;
@@ -65,12 +70,6 @@ void GameScreenLevel1::Update(float deltaTime, const Uint8* keyState) {
 void GameScreenLevel1::Render() {
 	SDL_RenderClear(mRenderer);
 
-	// Drawing the sky by declaring a rect
-	/*SDL_SetRenderDrawColor(mRenderer, 0x61, 0x85, 0xF8, 0xFF);
-	SDL_Rect bgRect {0,0,SCREEN_WIDTH,SCREEN_HEIGHT};
-	SDL_RenderFillRect(mRenderer, &bgRect);
-	SDL_SetRenderDrawColor(mRenderer, 0x00, 0x00, 0x00, 0x00);*/
-
 	if (gameManager->GetDebug()) {
 		for (unsigned int y = 0; y < 12; y++) {
 			for (unsigned int x = 0; x < 17; x++) {
@@ -95,15 +94,13 @@ void GameScreenLevel1::Render() {
 	}
 
 	for (Uint8 c = 0; c < mCharacters.size(); c++) {
-		if (mCharacters[c]->GetAlive()) {
-			mCharacters[c]->Render();
-			if (gameManager->GetDebug()) {
-				SDL_Rect charRect{ mCharacters[c]->GetPosition().x, mCharacters[c]->GetPosition().y, mCharacters[c]->GetCollisionBox().w, mCharacters[c]->GetCollisionBox().h};
-				SDL_SetRenderDrawColor(mRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
-				SDL_RenderDrawRect(mRenderer, &charRect);
-				SDL_SetRenderDrawColor(mRenderer, 0x00, 0x00, 0x00, 0x00);
+		mCharacters[c]->Render();
+		if (gameManager->GetDebug()) {
+			SDL_Rect charRect{ mCharacters[c]->GetPosition().x, mCharacters[c]->GetPosition().y, mCharacters[c]->GetCollisionBox().w, mCharacters[c]->GetCollisionBox().h};
+			SDL_SetRenderDrawColor(mRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+			SDL_RenderDrawRect(mRenderer, &charRect);
+			SDL_SetRenderDrawColor(mRenderer, 0x00, 0x00, 0x00, 0x00);
 
-			}
 		}
 	}
 
@@ -185,6 +182,7 @@ void GameScreenLevel1::ScreenShake() {
 
 bool GameScreenLevel1::SetUpLevel() {
 	SetGameState(GAME_STATE);
+	SetNextGameState(GAME_STATE);
 	mBackgroundTexture = new Texture2D(mRenderer);
 	SetLevelMap();
 	CharacterMario* charMario = new CharacterMario(mRenderer, Vector2D(64, 330), mLevelMap);
@@ -226,7 +224,7 @@ void GameScreenLevel1::SetLevelMap() {
 		{0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0},
 		{1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1},
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-		{0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 		{1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1},
 		{1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1},
 		{1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1},
@@ -240,7 +238,7 @@ void GameScreenLevel1::SetLevelMap() {
 
 void GameScreenLevel1::UpdatePOWBlock() {
 	for (Uint8 i = 0; i < mCharacters.size(); i++) {
-		if (Collisions::Instance()->Box(mPowBlock->GetCollisionBox(), mCharacters[i]->GetCollisionBox()) && (mCharacters[i]->GetCollisionMatrix()[0] || mCharacters[i]->GetCollisionMatrix()[1] || mCharacters[i]->GetCollisionMatrix()[2])) {
+		if (Collisions::Instance()->Box(mPowBlock->GetCollisionBox(), mCharacters[i]->GetCollisionBox()) && mCharacters[i]->GetPosition().y < mPowBlock->GetPosition().y + mPowBlock->GetCollisionBox().h) {
 			if (mPowBlock->IsAvailable()) {
 				if (mCharacters[i]->IsJumping()) {
 					ScreenShake();
@@ -250,44 +248,45 @@ void GameScreenLevel1::UpdatePOWBlock() {
 			}
 		}
 	}
-	
 }
 
 void GameScreenLevel1::PlayerCollision() {
 	// Tilemap collision
 	for (unsigned int i = 0; i < mCharacters.size(); i++) {
-		int footPos = (int)(mCharacters[i]->GetPosition().y + mCharacters[i]->GetCollisionBox().h) / TILE_HEIGHT;
-		std::vector<int> colMatrix =  mCharacters[i]->GetCollisionMatrix();
-		if (mCharacters[i]->IsJumping()) {
-			if (colMatrix[2] || colMatrix[5] || colMatrix[8]) {
-				mCharacters[i]->SetCanMoveRight(false);
-			} else {
-				mCharacters[i]->SetCanMoveRight(true);
-			}
+		if (mCharacters[i]->GetAlive()) {
+			int footPos = (int)(mCharacters[i]->GetPosition().y + mCharacters[i]->GetCollisionBox().h) / TILE_HEIGHT;
+			std::vector<int> colMatrix =  mCharacters[i]->GetCollisionMatrix();
+			if (mCharacters[i]->IsJumping()) {
+				if (colMatrix[2] || colMatrix[5] || colMatrix[8]) {
+					mCharacters[i]->SetCanMoveRight(false);
+				} else {
+					mCharacters[i]->SetCanMoveRight(true);
+				}
 
-			if (colMatrix[0] || colMatrix[3] || colMatrix[6]) {
-				mCharacters[i]->SetCanMoveLeft(false);
+				if (colMatrix[0] || colMatrix[3] || colMatrix[6]) {
+					mCharacters[i]->SetCanMoveLeft(false);
+				} else {
+					mCharacters[i]->SetCanMoveLeft(true);
+				}
 			} else {
-				mCharacters[i]->SetCanMoveLeft(true);
-			}
-		} else {
-			if (colMatrix[2] || colMatrix[5]) {
-				mCharacters[i]->SetCanMoveRight(false);
-			} else {
-				mCharacters[i]->SetCanMoveRight(true);
-			}
+				if (colMatrix[2] || colMatrix[5]) {
+					mCharacters[i]->SetCanMoveRight(false);
+				} else {
+					mCharacters[i]->SetCanMoveRight(true);
+				}
 
-			if (colMatrix[0] || colMatrix[3]) {
-				mCharacters[i]->SetCanMoveLeft(false);
-			} else {
-				mCharacters[i]->SetCanMoveLeft(true);
+				if (colMatrix[0] || colMatrix[3]) {
+					mCharacters[i]->SetCanMoveLeft(false);
+				} else {
+					mCharacters[i]->SetCanMoveLeft(true);
+				}
 			}
-		}
-		if (!colMatrix[7]) {
-			mCharacters[i]->SetFalling(true);
-		} else {
-			mCharacters[i]->SetFalling(false);
-			mCharacters[i]->SetCanJump(true);
+			if (!colMatrix[7]) {
+				mCharacters[i]->SetFalling(true);
+			} else {
+				mCharacters[i]->SetFalling(false);
+				mCharacters[i]->SetCanJump(true);
+			}
 		}
 	}
 	// Player collision
@@ -335,6 +334,15 @@ void GameScreenLevel1::PlayerCollision() {
 			}
 		}
 	}
+	int idx = -1;
+	for (unsigned int c = 0; c < mCharacters.size(); c++) {
+		if (mCharacters[c]->GetPosition().y > 400) {
+			idx = c;
+		}
+		if (idx != -1) {
+			mCharacters.erase(mCharacters.begin() + idx);
+		}
+	}
 }
 
 void GameScreenLevel1::UpdateEnemies(float deltaTime, const Uint8* keyState) {
@@ -354,10 +362,8 @@ void GameScreenLevel1::UpdateEnemies(float deltaTime, const Uint8* keyState) {
 					if (Collisions::Instance()->Box(mEnemies[i]->GetCollisionBox(), mCharacters[c]->GetCollisionBox())) {
 						if (mEnemies[i]->GetInjured()) {
 							mEnemies[i]->SetAlive(false);
-							mEnemies[i]->~CharacterKoopa();
 						} else {
 							mCharacters[c]->SetAlive(false);
-							mCharacters[c]->Die();
 						}
 					}
 				}

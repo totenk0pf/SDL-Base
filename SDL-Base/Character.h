@@ -27,7 +27,7 @@ public:
 	bool IsJumping() { return mJumping; };
 	bool IsFalling() { return mFalling; };
 	bool IsGrounded() { return mGrounded; };
-	void CancelJump() { mJumpForce = 0; };
+	void CancelJump();
 	int GetScore() { return mScore; };
 	int GetCoins() { return mCoins; };
 	int GetCurrentFrame() { return mCurrentFrame; };
@@ -41,7 +41,7 @@ public:
 	void SetGrounded(bool state) { mGrounded = state; };
 	void SetScore(int newScore) { mScore = newScore; };
 	void SetCoins(int newCoins) { mCoins = newCoins; };
-	void Die();
+	void Die(float deltaTime);
 
 	bool canMoveLeft() { return mCanMoveLeft; };
 	bool canMoveRight() { return mCanMoveRight; };

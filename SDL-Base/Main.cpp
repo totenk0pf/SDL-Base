@@ -10,7 +10,6 @@
 #include "imgui.h"
 #include "Imgui/backends/imgui_impl_sdl.h"
 
-
 SDL_Renderer* gRenderer = nullptr;
 SDL_Window* gWindow = nullptr;
 GameScreenManager* gameScreenManager;
@@ -79,7 +78,9 @@ bool Update() {
 	io.MousePos = ImVec2(static_cast<float>(mouseX), static_cast<float>(mouseY));
 	io.MouseDown[0] = buttons & SDL_BUTTON(SDL_BUTTON_LEFT);
 	io.MouseDown[1] = buttons & SDL_BUTTON(SDL_BUTTON_RIGHT);
-	gameScreenManager->Update((float)(newTime - gOldTime) / 1000.0f, keyState);
+	if (gameScreenManager->Update((float)(newTime - gOldTime) / 1000.0f, keyState)) {
+		return true;
+	}
 	while (SDL_PollEvent(&e)) {
 		switch (e.type) {
 			case SDL_QUIT:
@@ -93,15 +94,7 @@ bool Update() {
 				break;
 			case SDL_KEYUP:
 				switch (e.key.keysym.sym) {
-					case SDLK_RETURN:
-						if (gameScreenManager->GetNextGameState() == GAME_STATE) {
-							gameScreenManager->ChangeScreen(SCREEN_LEVEL1);
-						} else if (gameScreenManager->GetCurrentGameState() == GAME_STATE) {
-							gameScreenManager->ChangeScreen(SCREEN_INTRO);
-						} else if (gameScreenManager->GetNextGameState() == EXIT_STATE) {
-							return true;
-						}
-						break;
+					
 				}
 				break;
 		}
@@ -114,7 +107,7 @@ bool Update() {
 int main(int argc, char* args[]) {
 	bool quit = false;
 	if (InitSDL()) {
-		gameScreenManager = new GameScreenManager(gRenderer, SCREEN_LEVEL1);
+		gameScreenManager = new GameScreenManager(gRenderer, SCREEN_INTRO);
 		gOldTime = SDL_GetTicks();
 		ImGui::CreateContext();
 		ImGuiSDL::Initialize(gRenderer, SCREEN_WIDTH, SCREEN_HEIGHT);

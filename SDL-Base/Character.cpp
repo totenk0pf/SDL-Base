@@ -26,26 +26,31 @@ Character::~Character() {
 }
 
 void Character::Update(float deltaTime, const Uint8* keyState) {
-	if (mAlive) {
-		std::vector<int> colMatrix = GetCollisionMatrix();
-		if (mJumping) {
-			if (!colMatrix[0] && !colMatrix[1] && !colMatrix[2]) {
-				mPosition.y -= mJumpForce * deltaTime;
-				mJumpForce -= JUMP_FORCE_DECREMENT * deltaTime;
-				if (mJumpForce <= 0.0f && colMatrix[7] == 1) {
-					mJumping = false;
+	std::vector<int> colMatrix = GetCollisionMatrix();
+	if (mJumping) {
+		if (!colMatrix[0] && !colMatrix[1] && !colMatrix[2]) {
+			mPosition.y -= mJumpForce * deltaTime;
+			mJumpForce -= JUMP_FORCE_DECREMENT * deltaTime;
+			if (mAlive) {
+				if (mJumpForce <= 0.0f && (colMatrix[6] && colMatrix[7] && colMatrix[8])) {
+					CancelJump();
 					mFalling = false;
+					mJumping = false;
 				}
-			} else {
-				CancelJump();
-				mFalling = true;
 			}
-		}
-		if (mFalling) {
-			mCanJump = false;
-			AddGravity(deltaTime);
+		} else {
+			CancelJump();
+			mFalling = true;
 		}
 	}
+	if (mFalling) {
+		mCanJump = false;
+		AddGravity(deltaTime);
+	}
+}
+
+void Character::CancelJump() {
+	mJumpForce = 0;
 }
 
 void Character::MoveLeft(float deltaTime) {
@@ -76,7 +81,12 @@ void Character::Jump(float deltaTime) {
 	}
 }
 
-void Character::Die() {
+void Character::Die(float deltaTime) {
+	Jump(deltaTime);
+	mCurrentFrame = 7;
+	mInitFrame = 7;
+	PlayAnim(deltaTime, 0, 0.1f);
+	AddGravity(deltaTime);
 }
 
 void Character::AddGravity(float deltaTime) {
@@ -87,7 +97,7 @@ std::vector<int> Character::GetCollisionMatrix(int wCount, int hCount) {
 	std::vector<std::pair<float, float>> matrixPos{
 		{0,0},{0.5f,0},{1,0},
 		{0,0.5f},{0.5f,0.5f},{1,0.5f},
-		{0,1},{0.5f,1},{1,1}
+		{0,1.02f},{0.5f,1.02f},{1,1.02f}
 	};
 	Rect2D col = GetCollisionBox();
 	std::vector<int> collisionMatrix;
