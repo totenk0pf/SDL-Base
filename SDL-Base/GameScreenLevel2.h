@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef _GAME_SCREEN_LEVEL_1_H
-#define _GAME_SCREEN_LEVEL_1_H
+#ifndef _GAME_SCREEN_LEVEL_2_H
+#define _GAME_SCREEN_LEVEL_2_H
 
 #include <SDL.h>
 #include "Commons.h"
@@ -17,10 +17,10 @@ class Coin;
 class PowBlock;
 class TextRenderer;
 
-class GameScreenLevel1 : GameScreen {
+class GameScreenLevel2 : GameScreen {
 public:
-	GameScreenLevel1(SDL_Renderer* renderer);
-	~GameScreenLevel1();
+	GameScreenLevel2(SDL_Renderer* renderer);
+	~GameScreenLevel2();
 	void Render();
 	void Update(float deltaTime, const Uint8* keyState);
 	void UpdatePOWBlock();
@@ -52,4 +52,4 @@ private:
 	void SetLevelMap();
 };
 
-#endif // !_GAME_SCREEN_LEVEL_1_H
+#endif // !_GAME_SCREEN_LEVEL_2_H

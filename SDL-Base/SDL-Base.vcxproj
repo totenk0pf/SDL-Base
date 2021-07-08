@@ -154,6 +154,7 @@
     <ClCompile Include="GameOver.cpp" />
     <ClCompile Include="GameScreen.cpp" />
     <ClCompile Include="GameScreenLevel1.cpp" />
+    <ClCompile Include="GameScreenLevel2.cpp" />
     <ClCompile Include="GameScreenManager.cpp" />
     <ClCompile Include="Imgui\backends\imgui_impl_sdl.cpp" />
     <ClCompile Include="Imgui\imgui.cpp" />
@@ -169,6 +170,7 @@
     <ClCompile Include="TextRenderer.cpp" />
     <ClCompile Include="Texture2D.cpp" />
     <ClCompile Include="TitleScreen.cpp" />
+    <ClCompile Include="WinScreen.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Character.h" />
@@ -185,6 +187,7 @@
     <ClInclude Include="GameOver.h" />
     <ClInclude Include="GameScreen.h" />
     <ClInclude Include="GameScreenLevel1.h" />
+    <ClInclude Include="GameScreenLevel2.h" />
     <ClInclude Include="GameScreenManager.h" />
     <ClInclude Include="Imgui\backends\imgui_impl_sdl.h" />
     <ClInclude Include="Imgui\imgui.h" />
@@ -195,6 +198,7 @@
     <ClInclude Include="TextRenderer.h" />
     <ClInclude Include="Texture2D.h" />
     <ClInclude Include="TitleScreen.h" />
+    <ClInclude Include="WinScreen.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="SDL\lib\x86\SDL2.lib" />

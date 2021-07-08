@@ -15,14 +15,12 @@ CharacterLuigi::~CharacterLuigi() {
 }
 
 void CharacterLuigi::Render() {
-	if (mAlive) {
-		SDL_Rect frame = { mFrameW * mCurrentFrame, 0, mFrameW, mFrameH };
-		SDL_Rect destRect = { (int)mPosition.x, (int)mPosition.y, mFrameW, mFrameH };
-		if (mFacingDirection == FACING_RIGHT) {
-			mTexture->Render(frame, destRect, SDL_FLIP_HORIZONTAL);
-		} else {
-			mTexture->Render(frame, destRect);
-		}
+	SDL_Rect frame = { mFrameW * mCurrentFrame, 0, mFrameW, mFrameH };
+	SDL_Rect destRect = { (int)mPosition.x, (int)mPosition.y, mFrameW, mFrameH };
+	if (mFacingDirection == FACING_RIGHT) {
+		mTexture->Render(frame, destRect, SDL_FLIP_HORIZONTAL);
+	} else {
+		mTexture->Render(frame, destRect);
 	}
 }
 

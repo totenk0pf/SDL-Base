@@ -1,11 +1,15 @@
 #include "GameScreen.h"
 #include "GameScreenLevel1.h"
+#include "GameScreenLevel2.h"
+#include "WinScreen.h"
 #include "GameScreenManager.h"
 #include "TitleScreen.h"
 #include "GameOver.h"
+#include "TextRenderer.h"
 
 GameScreenManager::GameScreenManager(SDL_Renderer* renderer, SCREENS startScreen) {
 	mRenderer = renderer;
+	overlayText = new TextRenderer(8);
 	mCurrentScreen = nullptr;
 	ChangeScreen(startScreen);
 }
@@ -18,6 +22,7 @@ GameScreenManager::~GameScreenManager() {
 
 void GameScreenManager::Render() {
 	mCurrentScreen->Render();
+	//overlayText->Render(mRenderer, "Development build", (SCREEN_WIDTH) - overlayText->GetSize("Development build").first, (SCREEN_HEIGHT) - overlayText->GetSize("Development build").second);
 }
 
 bool GameScreenManager::Update(float deltaTime, const Uint8* keyState) {
@@ -29,11 +34,17 @@ bool GameScreenManager::Update(float deltaTime, const Uint8* keyState) {
 		case EXIT_STATE:
 			return true;
 			break;
-		case GAME_STATE:
+		case LVL1_STATE:
 			ChangeScreen(SCREEN_LEVEL1);
+			break;
+		case LVL2_STATE:
+			ChangeScreen(SCREEN_LEVEL2);
 			break;
 		case LOSE_STATE:
 			ChangeScreen(SCREEN_GAMEOVER);
+			break;
+		case WIN_STATE:
+			ChangeScreen(SCREEN_HIGHSCORES);
 			break;
 		}
 	}
@@ -46,7 +57,9 @@ void GameScreenManager::ChangeScreen(SCREENS newScreen) {
 		delete mCurrentScreen;
 	}
 	GameScreenLevel1* level1;
+	GameScreenLevel2* level2;
 	TitleScreen* mainMenu;
+	WinScreen* winScreen;
 	GameOver* gameOver;
 	switch (newScreen) {
 		case SCREEN_MENU:
@@ -59,10 +72,20 @@ void GameScreenManager::ChangeScreen(SCREENS newScreen) {
 			mCurrentScreen = (GameScreen*) level1;
 			level1 = nullptr;
 			break;
+		case SCREEN_LEVEL2:
+			level2 = new GameScreenLevel2(mRenderer);
+			mCurrentScreen = (GameScreen*) level2;
+			level2 = nullptr;
+			break;
 		case SCREEN_GAMEOVER:
 			gameOver = new GameOver(mRenderer);
 			mCurrentScreen = (GameScreen*) gameOver;
 			gameOver = nullptr;
+			break;
+		case SCREEN_HIGHSCORES:
+			winScreen = new WinScreen(mRenderer);
+			mCurrentScreen = (GameScreen*) winScreen;
+			winScreen = nullptr;
 			break;
 	}
 }

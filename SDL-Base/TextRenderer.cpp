@@ -39,7 +39,7 @@ void TextRenderer::Render(SDL_Renderer* renderer, const int score, int padding, 
 	textRect.x = x;
 	textRect.y = y;
 	SDL_QueryTexture(text, nullptr, nullptr, &textRect.w, &textRect.h);
-	SDL_RenderCopy(renderer, text, nullptr, &textRect);
+	SDL_RenderCopyEx(renderer, text, nullptr, &textRect, 0.0f, nullptr, SDL_FLIP_NONE);
 }
 
 std::pair<int, int> TextRenderer::GetSize(const char* message) {

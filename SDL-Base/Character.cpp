@@ -27,6 +27,36 @@ Character::~Character() {
 
 void Character::Update(float deltaTime, const Uint8* keyState) {
 	std::vector<int> colMatrix = GetCollisionMatrix();
+	if (colMatrix[6] || colMatrix[7] || colMatrix[8]) {
+		SetFalling(false);
+		SetCanJump(true);
+	} else {
+		SetFalling(true);
+	}
+	if (IsJumping()) {
+		if (colMatrix[2] || colMatrix[5] || colMatrix[8]) {
+			SetCanMoveRight(false);
+		} else {
+			SetCanMoveRight(true);
+		}
+
+		if (colMatrix[0] || colMatrix[3] || colMatrix[6]) {
+			SetCanMoveLeft(false);
+		} else {
+			SetCanMoveLeft(true);
+		}
+	} else {
+		if (colMatrix[2] || colMatrix[5]) {
+			SetCanMoveRight(false);
+		} else {
+			SetCanMoveRight(true);
+		}
+		if (colMatrix[0] || colMatrix[3]) {
+			SetCanMoveLeft(false);
+		} else {
+			SetCanMoveLeft(true);
+		}
+	}
 	if (mJumping) {
 		if (!colMatrix[0] && !colMatrix[1] && !colMatrix[2]) {
 			mPosition.y -= mJumpForce * deltaTime;

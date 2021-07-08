@@ -1,5 +1,5 @@
 #include <iostream>
-#include "GameOver.h"
+#include "WinScreen.h"
 #include "Texture2D.h"
 #include "Collisions.h"
 #include "Debug.h"
@@ -11,24 +11,22 @@
 #include "TextRenderer.h"
 #include "DataParser.h"
 
-GameOver::GameOver(SDL_Renderer* renderer) : GameScreen(renderer) {
+
+WinScreen::WinScreen(SDL_Renderer* renderer) : GameScreen(renderer) {
 	mLevelMap = nullptr;
 	titleSpr = new Texture2D(mRenderer);
 	selectSpr = new Texture2D(mRenderer);
 	mBgMusic = new SoundEffect;
 	opt = 0;
-	if (mBgMusic->Load("Sounds/01.ogg")) {
-		mBgMusic->Play(true);
-	}
 	SetUpLevel();
 	SetGameState(LOSE_STATE);
 	SetNextGameState(LOSE_STATE);
 }
 
-GameOver::~GameOver() {
+WinScreen::~WinScreen() {
 }
 
-void GameOver::Update(float deltaTime, const Uint8* keyState) {
+void WinScreen::Update(float deltaTime, const Uint8* keyState) {
 	SDL_Event e;
 	if (SDL_PollEvent(&e)) {
 		switch (e.type) {
@@ -61,16 +59,16 @@ void GameOver::Update(float deltaTime, const Uint8* keyState) {
 	}
 }
 
-void GameOver::Render() {
+void WinScreen::Render() {
 	SDL_RenderClear(mRenderer);
-	headerText->Render(mRenderer, "GAME OVER", (SCREEN_WIDTH * 0.5f) - headerText->GetSize("GAME OVER").first * 0.5f, 160);
+	headerText->Render(mRenderer, "YOU WIN", (SCREEN_WIDTH * 0.5f) - headerText->GetSize("YOU WIN").first * 0.5f, 160);
 	selectSpr->Render(Vector2D((SCREEN_WIDTH * 0.5f) - 80, 240 + (20 * opt + 1)));
 	UIText->Render(mRenderer, "BACK TO MENU", (SCREEN_WIDTH * 0.5f) - UIText->GetSize("BACK TO MENU").first * 0.5f, 240);
 	UIText->Render(mRenderer, "EXIT", (SCREEN_WIDTH * 0.5f) - UIText->GetSize("EXIT").first * 0.5f, 260);
 	SDL_RenderPresent(mRenderer);
 }
 
-bool GameOver::SetUpLevel() {
+bool WinScreen::SetUpLevel() {
 	UIText = new TextRenderer(8);
 	headerText = new TextRenderer(24);
 	selectSpr->LoadFromFile("Images/title_select.png");

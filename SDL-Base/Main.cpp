@@ -25,7 +25,7 @@ bool InitSDL() {
 		return false;
 	} else {
 		gWindow = SDL_CreateWindow(
-			"SDL Engine",
+			"SDL2 Engine",
 			SDL_WINDOWPOS_UNDEFINED,
 			SDL_WINDOWPOS_UNDEFINED,
 			SCREEN_WIDTH,
@@ -107,7 +107,7 @@ bool Update() {
 int main(int argc, char* args[]) {
 	bool quit = false;
 	if (InitSDL()) {
-		gameScreenManager = new GameScreenManager(gRenderer, SCREEN_INTRO);
+		gameScreenManager = new GameScreenManager(gRenderer, SCREEN_MENU);
 		gOldTime = SDL_GetTicks();
 		ImGui::CreateContext();
 		ImGuiSDL::Initialize(gRenderer, SCREEN_WIDTH, SCREEN_HEIGHT);

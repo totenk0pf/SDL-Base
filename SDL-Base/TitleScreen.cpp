@@ -8,11 +8,9 @@
 #include "CharacterKoopa.h"
 #include "imgui.h"
 #include "imgui_sdl.h"
-#include "GameManager.h"
 #include "TextRenderer.h"
 #include "DataParser.h"
 
-//GameManager* gameManager = GameManager::Instance();
 
 TitleScreen::TitleScreen(SDL_Renderer* renderer) : GameScreen(renderer) {
 	mLevelMap = nullptr;
@@ -20,9 +18,6 @@ TitleScreen::TitleScreen(SDL_Renderer* renderer) : GameScreen(renderer) {
 	selectSpr = new Texture2D(mRenderer);
 	mBgMusic = new SoundEffect;
 	opt = 0;
-	if (mBgMusic->Load("Sounds/01.ogg")) {
-		mBgMusic->Play(true);
-	}
 	SetUpLevel();
 	SetGameState(INTRO_STATE);
 	SetNextGameState(INTRO_STATE);
@@ -52,11 +47,17 @@ void TitleScreen::Update(float deltaTime, const Uint8* keyState) {
 				}
 				break;
 			case SDLK_RETURN:
-				if (!opt) {
-					SetNextGameState(GAME_STATE);
-				} else {
-					SetNextGameState(EXIT_STATE);
-				}
+				switch (opt) {
+					case 0:
+						SetNextGameState(LVL1_STATE);
+						break;
+					case 1:
+						SetNextGameState(LVL2_STATE);
+						break;
+					case 2:
+						SetNextGameState(EXIT_STATE);
+						break;
+					}
 				break;
 			}
 			break;
@@ -70,6 +71,8 @@ void TitleScreen::Render() {
 	selectSpr->Render(Vector2D((SCREEN_WIDTH * 0.5f) - 80, 240 + (20 * opt + 1)));
 	UIText->Render(mRenderer, "1 PLAYER GAME A", (SCREEN_WIDTH * 0.5f) - UIText->GetSize("1 PLAYER GAME A").first * 0.5f, 240);
 	UIText->Render(mRenderer, "2 PLAYER GAME B", (SCREEN_WIDTH * 0.5f) - UIText->GetSize("2 PLAYER GAME B").first * 0.5f, 260);
+	UIText->Render(mRenderer, "HAN21010007", (SCREEN_WIDTH)-UIText->GetSize("HAN21010007").first - 20, (SCREEN_HEIGHT)-UIText->GetSize("HAN21010007").second - 35);
+	UIText->Render(mRenderer, "Development build", (SCREEN_WIDTH)-UIText->GetSize("Development build").first - 20, (SCREEN_HEIGHT)-UIText->GetSize("Development build").second - 20);
 	UIText->Render(mRenderer, "EXIT", (SCREEN_WIDTH * 0.5f) - UIText->GetSize("EXIT").first * 0.5f, 280);
 	SDL_RenderPresent(mRenderer);
 }

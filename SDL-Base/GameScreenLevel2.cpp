@@ -1,5 +1,5 @@
 #include <iostream>
-#include "GameScreenLevel1.h"
+#include "GameScreenLevel2.h"
 #include "Texture2D.h"
 #include "Collisions.h"
 #include "Debug.h"
@@ -12,14 +12,14 @@
 #include "TextRenderer.h"
 #include "DataParser.h"
 
-GameScreenLevel1::GameScreenLevel1(SDL_Renderer* renderer) : GameScreen(renderer) {
+GameScreenLevel2::GameScreenLevel2(SDL_Renderer* renderer) : GameScreen(renderer) {
 	mLevelMap = nullptr;
 	SetUpLevel();
 	mBgMusic = new SoundEffect;
 	gameManager = new GameManager();
 }
 
-GameScreenLevel1::~GameScreenLevel1() {
+GameScreenLevel2::~GameScreenLevel2() {
 	mBackgroundTexture = nullptr;
 	delete mPowBlock;
 	mPowBlock = nullptr;
@@ -28,7 +28,7 @@ GameScreenLevel1::~GameScreenLevel1() {
 	mCharacters.clear();
 }
 
-void GameScreenLevel1::Update(float deltaTime, const Uint8* keyState) {
+void GameScreenLevel2::Update(float deltaTime, const Uint8* keyState) {
 	if (mCharacters.size() <= 0) {
 		SetNextGameState(LOSE_STATE);
 	}
@@ -57,22 +57,28 @@ void GameScreenLevel1::Update(float deltaTime, const Uint8* keyState) {
 			break;
 		}
 	}
-	PlayerCollision();
-	for (Uint8 i = 0; i < mCharacters.size(); i ++) {
+	for (Uint8 i = 0; i < mCharacters.size(); i++) {
 		mCharacters[i]->Update(deltaTime, keyState);
 	}
+	//PlayerCollision();
 	UpdatePOWBlock();
 	UpdateEnemies(deltaTime, keyState);
 	UpdateCoins(deltaTime);
 }
 
-void GameScreenLevel1::Render() {
+void GameScreenLevel2::Render() {
 	SDL_RenderClear(mRenderer);
+
+	// Render the sky by drawing a filled rect
+	SDL_SetRenderDrawColor(mRenderer, 0x61, 0x85, 0xF8, 0xFF);
+	SDL_Rect bgRect{ 0,0,SCREEN_WIDTH,SCREEN_HEIGHT };
+	SDL_RenderFillRect(mRenderer, &bgRect);
+	SDL_SetRenderDrawColor(mRenderer, 0x00, 0x00, 0x00, 0x00);
 
 	if (gameManager->GetDebug()) {
 		for (unsigned int y = 0; y < 12; y++) {
 			for (unsigned int x = 0; x < 17; x++) {
-				SDL_Rect mRect{ 32 * x-1, 32 * y-1, 34, 34 };
+				SDL_Rect mRect{ 32 * x - 1, 32 * y - 1, 34, 34 };
 				SDL_SetRenderDrawColor(mRenderer, 0x20, 0x20, 0x20, 0x30);
 				SDL_RenderDrawRect(mRenderer, &mRect);
 				SDL_SetRenderDrawColor(mRenderer, 0x00, 0x00, 0x00, 0x00);
@@ -85,7 +91,7 @@ void GameScreenLevel1::Render() {
 
 	if (mPowBlock->IsAvailable()) {
 		if (gameManager->GetDebug()) {
-			SDL_Rect powRect{mPowBlock->GetPosition().x, mPowBlock->GetPosition().y, mPowBlock->GetCollisionBox().w, mPowBlock->GetCollisionBox().h};
+			SDL_Rect powRect{ mPowBlock->GetPosition().x, mPowBlock->GetPosition().y, mPowBlock->GetCollisionBox().w, mPowBlock->GetCollisionBox().h };
 			SDL_SetRenderDrawColor(mRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 			SDL_RenderDrawRect(mRenderer, &powRect);
 			SDL_SetRenderDrawColor(mRenderer, 0x00, 0x00, 0x00, 0x00);
@@ -95,7 +101,7 @@ void GameScreenLevel1::Render() {
 	for (Uint8 c = 0; c < mCharacters.size(); c++) {
 		mCharacters[c]->Render();
 		if (gameManager->GetDebug()) {
-			SDL_Rect charRect{ mCharacters[c]->GetPosition().x, mCharacters[c]->GetPosition().y, mCharacters[c]->GetCollisionBox().w, mCharacters[c]->GetCollisionBox().h};
+			SDL_Rect charRect{ mCharacters[c]->GetPosition().x, mCharacters[c]->GetPosition().y, mCharacters[c]->GetCollisionBox().w, mCharacters[c]->GetCollisionBox().h };
 			SDL_SetRenderDrawColor(mRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 			SDL_RenderDrawRect(mRenderer, &charRect);
 			SDL_SetRenderDrawColor(mRenderer, 0x00, 0x00, 0x00, 0x00);
@@ -124,9 +130,9 @@ void GameScreenLevel1::Render() {
 	}
 
 	for (Uint8 i = 0; i < mCharacters.size(); i++) {
-		UIText->Render(mRenderer, mCharacters[i]->mName.c_str(), SCREEN_WIDTH/9, 40*(i+1));
-		UIText->Render(mRenderer, mCharacters[i]->GetScore(), 6, SCREEN_WIDTH/9, (40 * (i + 2))-20);
-		UIText->Render(mRenderer, mCharacters[i]->GetCoins(), 2, (SCREEN_WIDTH/9)*3, (40 * (i + 2)) - 20);
+		UIText->Render(mRenderer, mCharacters[i]->mName.c_str(), SCREEN_WIDTH / 9, 40 * (i + 1));
+		UIText->Render(mRenderer, mCharacters[i]->GetScore(), 6, SCREEN_WIDTH / 9, (40 * (i + 2)) - 20);
+		UIText->Render(mRenderer, mCharacters[i]->GetCoins(), 2, (SCREEN_WIDTH / 9) * 3, (40 * (i + 2)) - 20);
 	}
 
 	if (gameManager->GetDebug()) {
@@ -170,7 +176,7 @@ void GameScreenLevel1::Render() {
 	SDL_RenderPresent(mRenderer);
 }
 
-void GameScreenLevel1::ScreenShake() {
+void GameScreenLevel2::ScreenShake() {
 	mScreenshake = true;
 	mScreenshakeTime = SCREENSHAKE_DURATION;
 	mWobble = 0.0f;
@@ -179,14 +185,14 @@ void GameScreenLevel1::ScreenShake() {
 	}
 }
 
-bool GameScreenLevel1::SetUpLevel() {
-	SetGameState(LVL1_STATE);
-	SetNextGameState(LVL1_STATE);
+bool GameScreenLevel2::SetUpLevel() {
+	SetGameState(LVL2_STATE);
+	SetNextGameState(LVL2_STATE);
 	mBackgroundTexture = new Texture2D(mRenderer);
 	SetLevelMap();
 	CharacterMario* charMario = new CharacterMario(mRenderer, Vector2D(64, 330), mLevelMap);
 	CharacterLuigi* charLuigi = new CharacterLuigi(mRenderer, Vector2D(320, 330), mLevelMap);
-	nlohmann::json data = DataParser::Instance()->DataFromFile("GameData/Level1/lvldata.json");
+	nlohmann::json data = DataParser::Instance()->DataFromFile("GameData/Level2/lvldata.json");
 	mCharacters.push_back(charMario);
 	mCharacters.push_back(charLuigi);
 	for (Uint8 i = 0; i < data["enemies"].size(); i++) {
@@ -206,25 +212,25 @@ bool GameScreenLevel1::SetUpLevel() {
 	mPowBlock = new PowBlock(mRenderer, mLevelMap);
 	mScreenshake = false;
 	mBackgroundYPos = 0.0f;
-	if (!mBackgroundTexture->LoadFromFile("Images/BackgroundMB.png")) {
+	if (!mBackgroundTexture->LoadFromFile("Images/level2_bg.png")) {
 		std::cout << "Failed to load background texture!";
 		return false;
 	}
 	UIText = new TextRenderer(12);
 }
 
-void GameScreenLevel1::SetLevelMap() {
+void GameScreenLevel2::SetLevelMap() {
 	int map[MAP_HEIGHT][MAP_WIDTH] = {
-		{1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1},
-		{1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1},
-		{1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1},
-		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-		{0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0},
-		{1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1},
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 		{1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1},
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0},
+		{0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{1,1,1,1,1,0,0,0,0,0,0,1,1,1,1,1},
 		{1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1},
 		{1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1},
 		{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
@@ -235,7 +241,7 @@ void GameScreenLevel1::SetLevelMap() {
 	mLevelMap = new LevelMap(map);
 }
 
-void GameScreenLevel1::UpdatePOWBlock() {
+void GameScreenLevel2::UpdatePOWBlock() {
 	for (Uint8 i = 0; i < mCharacters.size(); i++) {
 		if (Collisions::Instance()->Box(mPowBlock->GetCollisionBox(), mCharacters[i]->GetCollisionBox()) && mCharacters[i]->GetPosition().y < mPowBlock->GetPosition().y + mPowBlock->GetCollisionBox().h) {
 			if (mPowBlock->IsAvailable()) {
@@ -249,7 +255,7 @@ void GameScreenLevel1::UpdatePOWBlock() {
 	}
 }
 
-void GameScreenLevel1::PlayerCollision() {
+void GameScreenLevel2::PlayerCollision() {
 	for (unsigned int c1 = 0; c1 < mCharacters.size(); c1++) {
 		Rect2D c1Col = mCharacters[c1]->GetCollisionBox();
 		std::vector<int> c1Matrix = mCharacters[c1]->GetCollisionMatrix();
@@ -305,7 +311,7 @@ void GameScreenLevel1::PlayerCollision() {
 	}
 }
 
-void GameScreenLevel1::UpdateEnemies(float deltaTime, const Uint8* keyState) {
+void GameScreenLevel2::UpdateEnemies(float deltaTime, const Uint8* keyState) {
 	if (!mEnemies.empty()) {
 		int enemyIdx = -1;
 		for (unsigned int i = 0; i < mEnemies.size(); i++) {
@@ -329,20 +335,20 @@ void GameScreenLevel1::UpdateEnemies(float deltaTime, const Uint8* keyState) {
 				}
 				std::vector<int> colMatrix = mEnemies[i]->GetCollisionMatrix(3, 1);
 				switch (mEnemies[i]->GetDirection()) {
-					case FACING_LEFT:
-						if (!colMatrix[8]) {
-							mEnemies[i]->SetFalling(true);
-						} else {
-							mEnemies[i]->SetFalling(false);
-						}
-						break;
-					case FACING_RIGHT:
-						if (!colMatrix[6]) {
-							mEnemies[i]->SetFalling(true);
-						} else {
-							mEnemies[i]->SetFalling(false);
-						}
-						break;
+				case FACING_LEFT:
+					if (!colMatrix[7]) {
+						mEnemies[i]->SetFalling(true);
+					} else {
+						mEnemies[i]->SetFalling(false);
+					}
+					break;
+				case FACING_RIGHT:
+					if (!colMatrix[7]) {
+						mEnemies[i]->SetFalling(true);
+					} else {
+						mEnemies[i]->SetFalling(false);
+					}
+					break;
 				}
 			}
 			mEnemies[i]->Update(deltaTime, keyState);
@@ -356,7 +362,7 @@ void GameScreenLevel1::UpdateEnemies(float deltaTime, const Uint8* keyState) {
 	}
 }
 
-void GameScreenLevel1::UpdateCoins(float deltaTime) {
+void GameScreenLevel2::UpdateCoins(float deltaTime) {
 	if (!mCoins.empty()) {
 		int idx = -1;
 		for (Uint8 i = 0; i < mCoins.size(); i++) {
@@ -378,12 +384,12 @@ void GameScreenLevel1::UpdateCoins(float deltaTime) {
 	}
 }
 
-void GameScreenLevel1::CreateKoopa(Vector2D position, FACING direction, float speed) {
+void GameScreenLevel2::CreateKoopa(Vector2D position, FACING direction, float speed) {
 	CharacterKoopa* _tmpKoopa = new CharacterKoopa(mRenderer, mLevelMap, position, direction, speed);
 	mEnemies.push_back(_tmpKoopa);
 }
 
-void GameScreenLevel1::CreateCoin(Vector2D position) {
+void GameScreenLevel2::CreateCoin(Vector2D position) {
 	Coin* _tmpCoin = new Coin(mRenderer, position, mLevelMap);
 	mCoins.push_back(_tmpCoin);
 }
